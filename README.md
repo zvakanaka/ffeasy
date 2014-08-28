@@ -1,4 +1,4 @@
-AME
+NAME
        ffeasy - easier ffmpeg media converting, playing, and editing
 
 SYNOPSIS
@@ -11,6 +11,7 @@ DESCRIPTION
        long movie, in order to remove unwanted scenes or words.
 
 OPTIONS
+
        -p, --play
               Play media using ffplay.
 
