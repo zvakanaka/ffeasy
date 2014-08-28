@@ -195,7 +195,6 @@ cutBoth() {
         arg4=$arg3
         arg3="${arg2%.*}$mode.${arg2#*.}"
     fi
-display_vars
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode $arg3\007"
     ffmpeg -i $arg2 -t $arg5 -c copy -map 0 -avoid_negative_ts 1 $tempV 
