@@ -1,8 +1,6 @@
 #!/bin/bash
 #SHELL SCRIPT FOR EASIER FFMPEG
-
 #MASTER COPY TO BE ON ASUS 
-#/home/adam/.bin/ffeasy
 
 #GLOBAL VARIABLES
 
@@ -152,6 +150,9 @@ android () {
     ffmpeg -i $arg2 $arg4 -vcodec libx264 -profile:v high -preset fast -b:v $VBR -maxrate $VBR -bufsize 1000k -vf scale=$WIDTH:-1 -threads 0 -acodec aac -strict experimental -b:a $ABR -ac 2 -ab 44100 $arg3
 }
 
+#CUT INFORMATION
+#HOURS:MM:SS.MICROSECONDS, as in 01:23:45.678
+#OR using 150.5 as in seconds
 #ss start second cut CUTS THE BEGINNING OFF, keeps quality
 #$arg2: inputFile $arg4: outputFile $arg3: startSecond 
 cutFront() {
@@ -165,7 +166,7 @@ cutFront() {
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode $arg3\007"
-    ffmpeg -i $arg2 -ss $arg4 -c copy $arg3
+    ffmpeg -i $arg2 -ss $arg4 -c copy  -avoid_negative_ts 1 $arg3
 }
 
 #t seconds terminate CUTS THE END OFF, keeps quality
@@ -180,12 +181,13 @@ cutBack() {
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode $arg3\007"
-    ffmpeg -i $arg2 -t $arg4 -acodec copy -vcodec copy -map 0$arg3
+    ffmpeg -i $arg2 -t $arg4 -c copy -map 0 -avoid_negative_ts 1 $arg3
 }
 
 #$arg2 inputFile $arg3 outputFile $arg4 startSecond $arg5 terminateSecond 
 cutBoth() {
     local mode="CutBoth"
+    local tempV="temp$mode.${arg2#*.}"
     echo mode set to $mode
     if [ -z "$arg5" ]
     then
@@ -193,9 +195,12 @@ cutBoth() {
         arg4=$arg3
         arg3="${arg2%.*}$mode.${arg2#*.}"
     fi
+display_vars
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode $arg3\007"
-    ffmpeg -i $arg2 -ss $arg4 -t $arg5 -c copy -map 0 $arg3
+    ffmpeg -i $arg2 -t $arg5 -c copy -map 0 -avoid_negative_ts 1 $tempV 
+    ffmpeg -i $tempV -ss $arg4 -c copy -map 0 -avoid_negative_ts 1 $arg3
+    rm $tempV
 }
 
 #convert for wii, first wiimc, then photochannel if possible 
