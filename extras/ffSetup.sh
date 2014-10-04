@@ -1,5 +1,12 @@
 #This is all you need to run to set up ffeasy
-
+#If ffmpeg not installed, install
+dpkg -s ffmpeg >> ffeasy.log
+if [ $? -eq 1 ]
+     then
+       apt-add-repository ppa:jon-severinsson/ffmpeg
+       apt-get update
+       apt-get install ffmpeg
+fi
 echo "additional script for converting, playing, or editing entire folders at once"
 sudo cp -v ffall.sh /usr/bin/ffall
 echo "main script"
