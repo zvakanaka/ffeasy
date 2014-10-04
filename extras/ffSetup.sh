@@ -3,9 +3,9 @@
 dpkg -s ffmpeg >> ffeasy.log
 if [ $? -eq 1 ]
      then
-       apt-add-repository ppa:jon-severinsson/ffmpeg
-       apt-get update
-       apt-get install ffmpeg
+       sudo apt-add-repository ppa:jon-severinsson/ffmpeg
+       sudo apt-get update
+       sudo apt-get install ffmpeg
 fi
 echo "additional script for converting, playing, or editing entire folders at once"
 sudo cp -v ffall.sh /usr/bin/ffall
