@@ -1,0 +1,1 @@
+TODO:Remove everything from bins, but add wget and use that and an unzipper to download the necessary binaries
