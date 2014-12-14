@@ -1,3 +1,6 @@
+INSTALL INSTRUCTIONS:
+<code> wget -qO- https://raw.githubusercontent.com/zvakanaka/ffeasy/master/linux/install.sh | sh </code>
+
 NAME
        ffeasy - easier ffmpeg media converting, playing, and editing
 
