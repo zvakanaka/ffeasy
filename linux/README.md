@@ -1,4 +1,4 @@
-INSTALL INSTRUCTIONS:
+INSTALL INSTRUCTIONS:<br>
 <code> wget -qO- https://raw.githubusercontent.com/zvakanaka/ffeasy/master/linux/install.sh | sh </code>
 
 NAME
