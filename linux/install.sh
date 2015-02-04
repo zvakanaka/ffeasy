@@ -16,14 +16,21 @@ chmod +x ff*.*s*
 dpkg -s ffmpeg >> ffeasy.log
 if [ $? -eq 1 ]
 then
+    #grep 'ubuntu' -i /proc/version
+#   if [ $? -eq ]
    echo "Ffmpeg not found, Attempting to install ffmpeg"
    lsb_release -a | grep utopic >> /dev/null
    if [ $? = '1' ]
    then
-      echo Older Ubuntu, asuming 14.04 
-      sudo apt-add-repository ppa:jon-severinsson/ffmpeg
-      sudo apt-get install ffmpeg
-      sudo apt-get update
+       lsb_release -a | grep vivid >> /dev/null
+       if [ $? = '1' ]
+	   echo Older Ubuntu, asuming 14.04 
+	   sudo apt-add-repository ppa:jon-severinsson/ffmpeg	   
+       else
+	   echo Ubuntu 15.04, ffmpeg is back in the repos
+       fi
+       sudo apt-get update	 
+       sudo apt-get install ffmpeg
    else
       echo Ubuntu 14.10 Detected
       sudo apt-add-repository ppa:samrog131/ppa
