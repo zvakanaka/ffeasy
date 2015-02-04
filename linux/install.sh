@@ -41,13 +41,12 @@ then
 fi
 
 echo "additional script for converting, playing, or editing entire folders at once"
-sudo cp -v ffall.sh /usr/bin/ffall
+sudo mv -v ffall.sh /usr/bin/ffall
 echo "main script"
-sudo cp -v ffeasy.sh /usr/bin/ffeasy
+sudo mv -v ffeasy.sh /usr/bin/ffeasy
 echo "icon from https://plus.google.com/+ffmpeg/posts"
-sudo cp -v ffmpeg.xpm /usr/share/pixmaps/
-echo "Setting up mime-type"
-echo "ffeasy will now show in the right click, open with menu"
-sudo cp -v ffeasy.desktop /usr/share/applications/
+sudo mv -v ffmpeg.xpm /usr/share/pixmaps/
+echo "Setting up mime-type so ffeasy will show in the right click, open with menu"
+sudo mv -v ffeasy.desktop /usr/share/applications/
 echo "Seting up man page"
-sudo cp -v ffeasy.1.gz /usr/share/man/man1/
+sudo mv -v ffeasy.1.gz /usr/share/man/man1/
