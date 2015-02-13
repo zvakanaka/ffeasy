@@ -24,6 +24,7 @@ then
    then
        lsb_release -a | grep vivid >> /dev/null
        if [ $? = '1' ]
+       then
 	   echo Older Ubuntu, asuming 14.04 
 	   sudo apt-add-repository ppa:jon-severinsson/ffmpeg	   
        else
