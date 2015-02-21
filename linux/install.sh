@@ -34,10 +34,9 @@ then
        sudo apt-get install ffmpeg
    else
       echo Ubuntu 14.10 Detected
-      sudo apt-add-repository ppa:samrog131/ppa
+      sudo apt-add-repository ppa:kirillshkrogalev/ffmpeg-next
       sudo apt-get update
-      sudo apt-get install ffmpeg-real ffmpeg-set-alternatives
-      sudo ln -sf /opt/ffmpeg/bin/ffmpeg /usr/bin/ffmpeg
+      sudo apt-get install ffmpeg
    fi
 fi
 
