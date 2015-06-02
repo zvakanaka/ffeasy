@@ -177,7 +177,7 @@ cutBack() {
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    ffmpeg -i ${pArray[1]} -t ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 ${pArray[2]}
+    ffmpeg -i "${pArray[1]}" -t ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
 }
 
 #${pArray[1]} inputFile ${pArray[2]} outputFile ${pArray[3]} startSecond ${pArray[4]} terminateSecond 
