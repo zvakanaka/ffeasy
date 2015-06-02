@@ -188,14 +188,14 @@ cutBoth() {
     echo mode set to $mode
     if [ -z "${pArray[4]}" ]
     then
-        {pArray[4]}=${pArray[3]}
-        {pArray[3]}=${pArray[2]}
-        {pArray[2]}="${{pArray[1]}%.*}$mode.${{pArray[1]}#*.}"
+        {pArray[4]}="${pArray[3]}"
+        {pArray[3]}="${pArray[2]}"
+        {pArray[2]}=""${{pArray[1]}%.*}"$mode."${{pArray[1]}#*.}""
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    ffmpeg -i ${pArray[1]} -t ${pArray[4]} -c copy -map 0 -avoid_negative_ts 1 $tempV 
-    ffmpeg -i $tempV -ss ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 ${pArray[2]}
+    ffmpeg -i "${pArray[1]}" -t "${pArray[4]}" -c copy -map 0 -avoid_negative_ts 1 $tempV 
+    ffmpeg -i $tempV -ss ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
     rm $tempV
 }
 
