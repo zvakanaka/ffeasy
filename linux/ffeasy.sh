@@ -5,7 +5,7 @@
 #GLOBAL VARIABLES
 
 #so that parameters passed to program can be kept
-pArray=(${@})
+pArray=("${@}")
 
 #default settings, specific modes may change or ignore them
 declare -i QUAL=5 #-q value (quality)
