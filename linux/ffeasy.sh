@@ -6,7 +6,8 @@
 
 #so that parameters passed to program can be kept
 pArray=("${@}")
-
+echo "${pArray[1]}"
+echo done with array
 #default settings, specific modes may change or ignore them
 declare -i QUAL=5 #-q value (quality)
 declare -i WIDTH=720
@@ -43,7 +44,7 @@ check_input () {
             display_vars
             ;;
         "ipod")
-            Message="$1 function has yet to be built"
+            Message="Function has yet to be built"
             ;;
         --p*)
             play
@@ -319,7 +320,7 @@ display_vars () {
     echo FPS..... $FPS
     echo ABR..... $ABR
 }
-vv
+
 #set title funtion
 set_title () {
 echo -ne "\033]0;$1\007"
