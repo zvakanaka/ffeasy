@@ -137,7 +137,7 @@ android () {
     local mode="ANDROID"
     echo mode set to $mode
 
-    if [ ${#} -lt 3 ]
+    if [ ${pArray#} -lt 3 ]
     then
         {pArray[2]}="${{pArray[1]}%.*}$mode.${{pArray[1]}#*.}"
     fi
