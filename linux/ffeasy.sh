@@ -6,8 +6,8 @@
 
 #so that parameters passed to program can be kept
 pArray=("${@}")
-echo "${pArray[1]}"
-echo done with array
+#echo "${pArray[1]}"
+#echo done with array
 #default settings, specific modes may change or ignore them
 declare -i QUAL=5 #-q value (quality)
 declare -i WIDTH=720
@@ -46,6 +46,15 @@ check_input () {
         "ipod")
             Message="Function has yet to be built"
             ;;
+	--m*)
+	    mp3
+	    ;;
+	-m*)
+	    mp3
+	    ;;
+	m*)
+	    mp3
+	    ;;
         --p*)
             play
             ;;
@@ -137,14 +146,34 @@ android () {
     local mode="ANDROID"
     echo mode set to $mode
 
-    if [ ${pArray#} -lt 3 ]
+    if [ ${#pArray[@]} -lt 3 ]
     then
-        {pArray[2]}="${{pArray[1]}%.*}$mode.${{pArray[1]}#*.}"
+        pArray[2]="${pArray[1]%.*}-$mode.${pArray[1]#*.}"
+    fi
+
+    #setting title
+    echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
+    
+    ffmpeg -i "${pArray[1]}" ${pArray[3]} -vcodec libx264 -profile:v high -preset fast -b:v $VBR -maxrate $VBR -bufsize 1000k -vf scale=$WIDTH:-1 -threads 0 -acodec aac -strict experimental -b:a $ABR -ac 2 -ab 44100 "${pArray[2]}"
+}
+
+#convert for mp3
+mp3 () {
+    local mode="MP3"
+    echo mode set to $mode
+    echo ${pArray#}
+
+    if [ ${#pArray[@]} -lt 3 ]
+    then
+	POOP=${pArray[1]}
+        PEE=$(basename -a "${POOP%.*}-$mode.mp3")
+	pArray[2]="$PEE"
+	echo POOP IS ${pArray[2]}
     fi
     #setting title
-    echo -ne "\033]0;BUSY $promptInput mode:$mode ${{pArray[2]}}\007"
+    echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
 
-    ffmpeg -i ${pArray[1]} ${pArray[3]} -vcodec libx264 -profile:v high -preset fast -b:v $VBR -maxrate $VBR -bufsize 1000k -vf scale=$WIDTH:-1 -threads 0 -acodec aac -strict experimental -b:a $ABR -ac 2 -ab 44100 ${pArray[2]}
+    ffmpeg -i "'${pArray[1]}'" -acodec libmp3lame "'${pArray[2]}'"
 }
 
 #CUT INFORMATION
@@ -158,12 +187,12 @@ cutFront() {
 
     if [ -z "${pArray[3]}" ]
     then
-        {pArray[3]}=${pArray[2]}
-        {pArray[2]}="${{pArray[1]}%.*}$mode.${{pArray[1]}#*.}"
+        pArray[3]="${pArray[2]}"
+        pArray[2]="${pArray[1]%.*}-$mode.${pArray[1]#*.}"
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    ffmpeg -i ${pArray[1]} -ss ${pArray[3]} -c copy  -avoid_negative_ts 1 ${pArray[2]}
+    ffmpeg -i "${pArray[1]}" -ss ${pArray[3]} -c copy  -avoid_negative_ts 1 "${pArray[2]}"
 }
 
 #t seconds terminate CUTS THE END OFF, keeps quality
@@ -173,30 +202,30 @@ cutBack() {
     echo mode set to $mode
     if [ -z "${pArray[3]}" ]
     then
-        {pArray[3]}="${pArray[2]}"
-        {pArray[2]}="${{pArray[1]}%.*}$mode.${"{pArray[1]}"#*.}"
+        pArray[3]="${pArray[2]}"
+        pArray[2]="${pArray[1]%.*}-$mode.${pArray[1]#*.}"
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    ffmpeg -i "${pArray[1]}" -t "${pArray[3]}" -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
+    ffmpeg -i "${pArray[1]}" -t ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
 }
 
 #${pArray[1]} inputFile ${pArray[2]} outputFile ${pArray[3]} startSecond ${pArray[4]} terminateSecond 
 cutBoth() {
     local mode="CutBoth"
-    local tempV="temp$mode.${{pArray[1]}#*.}"
+    local tempV="temp$mode.${pArray[1]#*.}"
     echo mode set to $mode
     if [ -z "${pArray[4]}" ]
     then
-        {pArray[4]}="${pArray[3]}"
-        {pArray[3]}="${pArray[2]}"
-        {pArray[2]}=""${{pArray[1]}%.*}"$mode."${{pArray[1]}#*.}""
+        pArray[4]="${pArray[3]}"
+        pArray[3]="${pArray[2]}"
+        pArray[2]=""${pArray[1]%.*}"-$mode."${pArray[1]#*.}
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
     ffmpeg -i "${pArray[1]}" -t "${pArray[4]}" -c copy -map 0 -avoid_negative_ts 1 $tempV 
-    ffmpeg -i $tempV -ss ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
-    rm $tempV
+    ffmpeg -i "$tempV" -ss ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
+    rm "$tempV"
 }
 
 #convert for wii, first wiimc, then photochannel if possible 
@@ -211,11 +240,11 @@ wii () {
 
     if [ -z "${pArray[2]}" ]
     then
-        {pArray[2]}="${{pArray[1]}%.*}$mode.avi"
+        pArray[2]="${pArray[1]%.*}-$mode.avi"
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    ffmpeg -i ${pArray[1]} ${pArray[3]} -vcodec mpeg4 -q $QUAL -preset medium -b:v 500k -vf scale=$WIDTH:-1 -threads 0 -acodec mp3 -strict experimental -b:a $ABR -ac 1 -ab 44100 ${pArray[2]}
+    ffmpeg -i "${pArray[1]}" ${pArray[3]} -vcodec mpeg4 -q $QUAL -preset medium -b:v 500k -vf scale=$WIDTH:-1 -threads 0 -acodec mp3 -strict experimental -b:a $ABR -ac 1 -ab 44100 "${pArray[2]}"
 }
 
 #Removes segment from video and merges into out
@@ -226,13 +255,13 @@ remSeg() {
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
     #save the around into temps
-    ffmpeg -i ${pArray[1]} -y -t ${pArray[3]} -avoid_negative_ts 1 -c copy -map 0 TEMP1.mp4
-    ffmpeg -i ${pArray[1]} -y -ss ${pArray[4]} -avoid_negative_ts 1 -c copy -map 0 TEMP2.mp4
+    ffmpeg -i "${pArray[1]}" -y -t "${pArray[3]}" -avoid_negative_ts 1 -c copy -map 0 TEMP1.mp4
+    ffmpeg -i "${pArray[1]}" -y -ss ${pArray[4]} -avoid_negative_ts 1 -c copy -map 0 TEMP2.mp4
     echo "#2 files being merged to ${pArray[2]}"
     echo "file 'TEMP1.mp4'" > TEMP.txt
     echo "file 'TEMP2.mp4'" >> TEMP.txt
     #merge them back
-    ffmpeg -y -f concat -i TEMP.txt -c copy ${pArray[2]} 
+    ffmpeg -y -f concat -i TEMP.txt -c copy "${pArray[2]}" 
     rm TEMP.txt TEMP1.mp4 TEMP2.mp4
 }
 
@@ -244,7 +273,7 @@ rotate() {
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
     ANGLE="1"
-    ffmpeg -i ${pArray[1]} -vcodec libx264 -preset slow -crf 0 -vf transpose=$ANGLE -acodec copy ${pArray[2]}
+    ffmpeg -i "${pArray[1]}" -vcodec libx264 -preset slow -crf 0 -vf transpose=$ANGLE -acodec copy "${pArray[2]}"
 }
 
 #tuna-viDS for nintendo ds homebrew avi video player
@@ -256,12 +285,11 @@ tunaviDS() {
     echo mode set to $mode
     if [ -z "${pArray[2]}" ]
     then
-        echo NO PARRAy[2]
-        {pArray[2]}="${{pArray[1]}%.*}$mode.avi"
+        pArray[2]="${pArray[1]%.*}-$mode.avi"
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    ffmpeg -i ${pArray[1]} ${pArray[3]} -f avi -r 10 -s 256x192 -b:v 192k -bt 64k -vcodec mpeg4 -deinterlace -acodec libmp3lame -ar 32000 -ab 96k -ac 2 ${pArray[2]}
+    ffmpeg -i "${pArray[1]}" ${pArray[3]} -f avi -r 10 -s 256x192 -b:v 192k -bt 64k -vcodec mpeg4 -deinterlace -acodec libmp3lame -ar 32000 -ab 96k -ac 2 "${pArray[2]}"
 }
 
 #${pArray[1]} watermarkimage ${pArray[2]} inputvid ${pArray[3]} output vid
@@ -271,7 +299,7 @@ watermark() {
     echo mode set to $mode
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[3]}\007"
-    ffmpeg -i ${pArray[2]} -vf "movie=${pArray[1]} [watermark]; [in][watermark] overlay=10:main_h-overlay_h-10 [out]" -acodec copy ${pArray[3]}
+    ffmpeg -i "${pArray[2]}" -vf "movie=${pArray[1]} [watermark]; [in][watermark] overlay=10:main_h-overlay_h-10 [out]" -acodec copy "${pArray[3]}"
     
     #ffmpeg -i ${pArray[2]} -i ${pArray[1]}  -filter_complex \
     #"[1:v]scale=25:20[wat];[0:v][wat]overlay=10:main_h-overlay_h-10[outv]" \
@@ -291,7 +319,7 @@ tagDirectory() {
     echo mode set to $mode
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007" 
-    for f in ${pArray[2]}/*.mp3
+    for f in "$pArray[2]"/*.mp3
     do
         ffmpeg -i "$f" -i "${pArray[1]}" -map_metadata 0 -map 0 -map 1 out-"${f#./}" \
         && mv out-"${f#./}" "$f"
