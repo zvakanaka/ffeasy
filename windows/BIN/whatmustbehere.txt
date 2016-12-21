@@ -1,6 +1,5 @@
 convert.exe
 ffmpeg.exe
 ffplay.exe
-vcomp100.dll
-whatmustbehere.txt
+vcomp100.dll 
 youtube-dl.exe
