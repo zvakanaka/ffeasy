@@ -1,6 +1,6 @@
 #!/bin/bash
 #SHELL SCRIPT FOR EASIER FFMPEG
-#MASTER COPY TO BE ON ASUS 
+#MASTER COPY TO BE ON ASUS
 
 #GLOBAL VARIABLES
 
@@ -40,79 +40,85 @@ check_input () {
         *cutbo*)
             cutBoth
             ;;
-        "vars")
+       *gtom*)
+	    gifToMovie
+            ;;
+       *mtog*)
+	    movieToGif
+	    ;;
+       "vars")
             display_vars
             ;;
         "ipod")
             Message="Function has yet to be built"
             ;;
-	--m*)
-	    mp3
-	    ;;
-	-m*)
-	    mp3
-	    ;;
-	m*)
-	    mp3
-	    ;;
-        --p*)
-            play
-            ;;
-        -p)
-            play
-            ;;
-        "play")
-            play
-            ;;
-        "simple")
-            simple
-            ;;
-        rem*)
-            remSeg
-            ;;
-        --rem*)
-            remSeg
-            ;;
-        -r*)
-            remSeg
-            ;;
-        *rot*)
-            rotate
-            ;;
-        "-R")
-            rotate
-            ;;
-        "tunaviDS")
-            tunaviDS
-            ;;
-        *tuna*)
-            tunaviDS
-            ;;
-        "-t")
-            tunaviDS
-            ;;
-        *water*)
-            watermark
-            ;;
-        "-w")
-            watermark
-            ;;
-        --wat*)
-            watermark
-            ;;
-        "wii")
-            wii
-            ;;
-        "--wii")
-            wii
-            ;;
-        "-W")
-            wii
-            ;;
-        *tag*)
-            tagDirectory
-            ;;
-        "")
+	      --m*)
+	         mp3
+	         ;;
+	     -m*)
+	        mp3
+	        ;;
+	     m*)
+	       mp3
+	       ;;
+       --p*)
+         play
+         ;;
+       -p)
+         play
+         ;;
+      "play")
+         play
+         ;;
+      "simple")
+         simple
+         ;;
+      rem*)
+        remSeg
+        ;;
+      --rem*)
+        remSeg
+        ;;
+      -r*)
+        remSeg
+        ;;
+      *rot*)
+        rotate
+        ;;
+      "-R")
+        rotate
+        ;;
+      "tunaviDS")
+        tunaviDS
+        ;;
+      *tuna*)
+          tunaviDS
+          ;;
+      "-t")
+          tunaviDS
+          ;;
+      *water*)
+          watermark
+          ;;
+      "-w")
+          watermark
+          ;;
+      --wat*)
+          watermark
+          ;;
+      "wii")
+          wii
+          ;;
+      "--wii")
+          wii
+          ;;
+      "-W")
+          wii
+          ;;
+      *tag*)
+          tagDirectory
+          ;;
+      "")
             echo See man pages for ffeasy
             ;;
         *)
@@ -153,7 +159,7 @@ android () {
 
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    
+
     ffmpeg -i "${pArray[1]}" ${pArray[3]} -vcodec libx264 -profile:v high -preset fast -b:v $VBR -maxrate $VBR -bufsize 1000k -vf scale=$WIDTH:-1 -threads 0 -acodec aac -strict experimental -b:a $ABR -ac 2 -ab 44100 "${pArray[2]}"
 }
 
@@ -180,7 +186,7 @@ mp3 () {
 #HOURS:MM:SS.MICROSECONDS, as in 01:23:45.678
 #OR using 150.5 as in seconds
 #ss start second cut CUTS THE BEGINNING OFF, keeps quality
-#${pArray[1]}: inputFile ${pArray[3]}: outputFile ${pArray[2]}: startSecond 
+#${pArray[1]}: inputFile ${pArray[3]}: outputFile ${pArray[2]}: startSecond
 cutFront() {
     local mode="CutFront"
     echo mode set to $mode
@@ -196,7 +202,7 @@ cutFront() {
 }
 
 #t seconds terminate CUTS THE END OFF, keeps quality
-#${pArray[1]} inputFile ${pArray[2]} outputFile ${pArray[3]} terminateSecond 
+#${pArray[1]} inputFile ${pArray[2]} outputFile ${pArray[3]} terminateSecond
 cutBack() {
     local mode="CutBack"
     echo mode set to $mode
@@ -210,7 +216,7 @@ cutBack() {
     ffmpeg -i "${pArray[1]}" -t ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
 }
 
-#${pArray[1]} inputFile ${pArray[2]} outputFile ${pArray[3]} startSecond ${pArray[4]} terminateSecond 
+#${pArray[1]} inputFile ${pArray[2]} outputFile ${pArray[3]} startSecond ${pArray[4]} terminateSecond
 cutBoth() {
     local mode="CutBoth"
     local tempV="temp$mode.${pArray[1]#*.}"
@@ -223,12 +229,38 @@ cutBoth() {
     fi
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
-    ffmpeg -i "${pArray[1]}" -t "${pArray[4]}" -c copy -map 0 -avoid_negative_ts 1 $tempV 
+    ffmpeg -i "${pArray[1]}" -t "${pArray[4]}" -c copy -map 0 -avoid_negative_ts 1 $tempV
     ffmpeg -i "$tempV" -ss ${pArray[3]} -c copy -map 0 -avoid_negative_ts 1 "${pArray[2]}"
     rm "$tempV"
 }
 
-#convert for wii, first wiimc, then photochannel if possible 
+gifToMovie() {
+    local mode="GifToMovie"
+    echo mode set to $mode
+
+    if [ -z "${pArray[2]}" ]
+    then
+        pArray[2]="${pArray[1]%.*}-$mode.avi"
+    fi
+    #setting title
+    echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
+    ffmpeg -i "${pArray[1]}" -movflags faststart -pix_fmt yuv420p "${pArray[2]}"
+}
+
+movieToGif() {
+    local mode="MovieToGif"
+    echo mode set to $mode
+
+    if [ -z "${pArray[2]}" ]
+    then
+	pArray[2]="${pArray[1]%.*}-$mode.gif"
+    fi
+    #setting title
+    echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
+    ffmpeg -i "${pArray[1]}" -vf scale=800:-1 -r 10 -f image2pipe -vcodec ppm - | convert -delay 10 -layers Optimize -loop 0 - "${pArray[2]}"
+}
+
+#convert for wii, first wiimc, then photochannel if possible
 wii () {
     local WIDTH=800
     local HEIGHT=480
@@ -261,7 +293,7 @@ remSeg() {
     echo "file 'TEMP1.mp4'" > TEMP.txt
     echo "file 'TEMP2.mp4'" >> TEMP.txt
     #merge them back
-    ffmpeg -y -f concat -i TEMP.txt -c copy "${pArray[2]}" 
+    ffmpeg -y -f concat -i TEMP.txt -c copy "${pArray[2]}"
     rm TEMP.txt TEMP1.mp4 TEMP2.mp4
 }
 
@@ -300,7 +332,7 @@ watermark() {
     #setting title
     echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[3]}\007"
     ffmpeg -i "${pArray[2]}" -vf "movie=${pArray[1]} [watermark]; [in][watermark] overlay=10:main_h-overlay_h-10 [out]" -acodec copy "${pArray[3]}"
-    
+
     #ffmpeg -i ${pArray[2]} -i ${pArray[1]}  -filter_complex \
     #"[1:v]scale=25:20[wat];[0:v][wat]overlay=10:main_h-overlay_h-10[outv]" \
     #-map "[outv]" -map 0:a -strict experimental ${pArray[3]}
@@ -318,7 +350,7 @@ tagDirectory() {
     local mode="Tag Directory"
     echo mode set to $mode
     #setting title
-    echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007" 
+    echo -ne "\033]0;BUSY $promptInput mode:$mode ${pArray[2]}\007"
     for f in "$pArray[2]"/*.mp3
     do
         ffmpeg -i "$f" -i "${pArray[1]}" -map_metadata 0 -map 0 -map 1 out-"${f#./}" \
@@ -341,7 +373,7 @@ play () {
 
 display_vars () {
     echo "0 $0, 1 $1, 2 $2, 3 $3, 4 $4, 5 $5"
-    echo "pArray[0] ${pArray[0]}, pArray[1] ${pArray[1]}, pArray[2] ${pArray[2]}, pArray[3] ${pArray[3]}, pArray[4] ${pArray[4]}" 
+    echo "pArray[0] ${pArray[0]}, pArray[1] ${pArray[1]}, pArray[2] ${pArray[2]}, pArray[3] ${pArray[3]}, pArray[4] ${pArray[4]}"
     echo QUAL.... $QUAL
     echo WIDTH... $WIDTH
     echo HEIGHT.. $HEIGHT
@@ -358,7 +390,7 @@ printHelp() {
     echo "No parameters passed in
           Usage: ffeasy [-p] PLAY
              or: ffeasy [-a] ANDROIDCONVERT
-                see man pages for more help" 
+                see man pages for more help"
 }
 
 ##############MAIN or DRIVER#################
@@ -374,5 +406,5 @@ then
 fi
 
 check_input ${pArray[0]}
-#mode, input, output, additional options 
+#mode, input, output, additional options
 #android $2 $3 $4
